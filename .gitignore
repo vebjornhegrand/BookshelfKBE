@@ -1,0 +1,33 @@
+# Python
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jena Fuseki (if installed in project directory)
+apache-jena-fuseki-*/
+*.tar.gz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.log
+*.tmp
+

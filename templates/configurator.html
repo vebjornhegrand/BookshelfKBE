@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookshelf KBE Configurator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Intelligent Bookshelf Design System</h1>
+            <div class="status-bar" id="statusBar">
+                <span class="status-item">KB: <span id="kbStatus">?</span></span>
+                <span class="status-item">GA: <span id="gaStatus">OK</span></span>
+                <span class="status-item">CAD: <span id="cadStatus">?</span></span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Configuration -->
+            <div class="config-panel">
+                <h2>Design Requirements</h2>
+                
+                <div class="form-section">
+                    <h3>Dimensions (mm)</h3>
+                    <div class="form-group">
+                        <label for="width">Width:</label>
+                        <input type="range" id="width" min="400" max="1500" value="800" step="50">
+                        <span id="widthValue">800</span> mm
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="height">Height:</label>
+                        <input type="range" id="height" min="800" max="2400" value="1800" step="50">
+                        <span id="heightValue">1800</span> mm
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="depth">Depth:</label>
+                        <input type="range" id="depth" min="200" max="500" value="300" step="25">
+                        <span id="depthValue">300</span> mm
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Configuration</h3>
+                    <div class="form-group">
+                        <label for="numShelves">Number of Shelves:</label>
+                        <input type="number" id="numShelves" min="1" max="8" value="4">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="material">Material:</label>
+                        <select id="material">
+                            <option value="melamine_pb">Melamine Particleboard</option>
+                            <option value="plywood">Plywood</option>
+                            <option value="mdf">MDF</option>
+                            <option value="solid_wood">Solid Wood</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="targetLoad">Target Load (kg/bay):</label>
+                        <input type="number" id="targetLoad" min="10" max="200" value="50">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="addTop" checked>
+                            Add Top Panel
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="jointMethod">Joint Method:</label>
+                        <select id="jointMethod">
+                            <option value="camlock_dowels">Cam-locks + Dowels</option>
+                            <option value="glue_dowels">Glue + Dowels</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="shelfPinsMode">Shelf Pin Holes:</label>
+                        <select id="shelfPinsMode">
+                            <option value="modular_grid">Modular Grid</option>
+                            <option value="fixed_at_shelves">Fixed at Shelf Height</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="searchKB()" class="btn btn-primary">
+                        Search Knowledge Base
+                    </button>
+                    <button onclick="optimizeWithGA()" class="btn btn-success">
+                        Optimize with GA
+                    </button>
+                </div>
+            </div>
+
+            <!-- Middle Panel: 3D Viewer -->
+            <div class="viewer-panel">
+                <h2>3D Visualization</h2>
+                <div id="threejs-container"></div>
+                <div class="viewer-controls">
+                    <button onclick="resetView()">Reset View</button>
+                    <button onclick="toggleWireframe()">Wireframe</button>
+                </div>
+            </div>
+
+            <!-- Right Panel: Results -->
+            <div class="results-panel">
+                <h2>Analysis Results</h2>
+                
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                        <button class="tab-button active" onclick="showTab('cost', this)">Cost</button>
+                        <button class="tab-button" onclick="showTab('kb', this)">KB Search</button>
+                        <button class="tab-button" onclick="showTab('ga', this)">GA Report</button>
+                    </div>
+                    
+                    <div id="cost-tab" class="tab-content active">
+                        <h3>Cost Breakdown</h3>
+                        <div id="costResults">
+                            <p>No design analyzed yet</p>
+                        </div>
+                        <canvas id="costChart" style="display:none;"></canvas>
+                    </div>
+                    
+                    <div id="kb-tab" class="tab-content">
+                        <h3>Knowledge Base Results</h3>
+                        <div id="kbResults">
+                            <p>No search performed yet</p>
+                        </div>
+                    </div>
+                    
+                    <div id="ga-tab" class="tab-content">
+                        <h3>GA Optimization Report</h3>
+                        <div id="gaResults">
+                            <p>No optimization performed yet</p>
+                        </div>
+                        <div id="componentPlan" class="component-plan">
+                            <p>Component availability will appear here after optimization.</p>
+                        </div>
+                        <div id="gaChartContainer" style="height: 400px; position: relative; display: none;">
+                            <canvas id="gaChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button onclick="placeOrder()" class="btn btn-primary" disabled id="orderBtn">
+                        Place Order
+                    </button>
+                    <button onclick="exportCAD()" class="btn btn-secondary" disabled id="exportBtn">
+                        Export CAD
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Designs Footer -->
+        <footer>
+            <h3>Popular Designs</h3>
+            <div id="popularDesigns" class="popular-grid">
+                <!-- Will be populated dynamically -->
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/viewer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
