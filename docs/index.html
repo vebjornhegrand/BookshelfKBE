@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookshelf KBE Configurator - Portfolio Demo</title>
+    <meta name="description" content="Intelligent bookshelf design system using Knowledge-Based Engineering, Genetic Algorithms, and 3D visualization">
+    <meta name="author" content="Vebjørn Hegrand">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>🔧 Bookshelf KBE Configurator</h1>
+                <p style="font-size: 14px; color: #6b7280; margin-top: 5px;">
+                    Interactive Portfolio Demo | 
+                    <a href="https://github.com/vebjornhegrand/BookshelfKBE" target="_blank" style="color: #2563eb;">View Full Code on GitHub</a>
+                </p>
+            </div>
+            <div class="status-bar" id="statusBar">
+                <span class="status-item">Demo Mode: <span id="demoStatus" style="color: #16a34a;">✓</span></span>
+                <span class="status-item">GA: <span id="gaStatus" style="color: #16a34a;">OK</span></span>
+                <span class="status-item">3D: <span id="cadStatus" style="color: #16a34a;">OK</span></span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Configuration Panel -->
+            <div class="config-panel">
+                <h2>Design Requirements</h2>
+                
+                <div class="form-section">
+                    <h3>Dimensions (mm)</h3>
+                    
+                    <div class="form-group">
+                        <label>Width: <span id="widthValue">800</span> mm</label>
+                        <input type="range" id="width" min="400" max="2000" value="800" step="50">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Height: <span id="heightValue">1800</span> mm</label>
+                        <input type="range" id="height" min="600" max="2400" value="1800" step="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Depth: <span id="depthValue">300</span> mm</label>
+                        <input type="range" id="depth" min="200" max="500" value="300" step="25">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Configuration</h3>
+                    
+                    <div class="form-group">
+                        <label>Number of Shelves:</label>
+                        <input type="number" id="numShelves" min="0" max="10" value="4">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Material:</label>
+                        <select id="material">
+                            <option value="melamine_pb">Melamine Particleboard</option>
+                            <option value="plywood">Plywood</option>
+                            <option value="mdf">MDF</option>
+                            <option value="solid_wood">Solid Wood</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Target Load (kg/bay):</label>
+                        <input type="number" id="targetLoad" min="10" max="200" value="50" step="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" id="addTop" checked>
+                            Add Top Panel
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Joint Method:</label>
+                        <select id="jointMethod">
+                            <option value="camlock_dowels">Cam-locks + Dowels</option>
+                            <option value="glue_dowels">Glue + Dowels</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="optimizeWithGA()">🧬 Optimize Design (GA)</button>
+                    <button class="btn btn-success" onclick="generatePreview()">👁️ Generate 3D Preview</button>
+                </div>
+            </div>
+
+            <!-- 3D Viewer Panel -->
+            <div class="viewer-panel">
+                <h2>3D Visualization</h2>
+                <div id="threejs-container"></div>
+                <div class="viewer-controls">
+                    <button onclick="resetView()">Reset View</button>
+                    <button onclick="toggleWireframe()">Wireframe</button>
+                    <button onclick="exportSTL()">Export STL</button>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="results-panel">
+                <h2>Analysis Results</h2>
+                
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-tab="cost" onclick="showTab('cost')">Cost</button>
+                        <button class="tab-button" data-tab="ga" onclick="showTab('ga')">GA Report</button>
+                        <button class="tab-button" data-tab="info" onclick="showTab('info')">About</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="costTab">
+                        <h3>Cost Breakdown</h3>
+                        <div id="costResults">
+                            <p>Click "Optimize Design" to calculate costs</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="gaTab">
+                        <h3>GA Optimization Report</h3>
+                        <div id="gaResults">
+                            <p>Run optimization to see GA performance</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="infoTab">
+                        <h3>About This Project</h3>
+                        <div style="font-size: 13px; line-height: 1.8;">
+                            <p><strong>Technologies Used:</strong></p>
+                            <ul style="margin-left: 20px; margin-bottom: 10px;">
+                                <li>Python Flask (Backend)</li>
+                                <li>Apache Jena Fuseki (Knowledge Base)</li>
+                                <li>Genetic Algorithms (Optimization)</li>
+                                <li>FreeCAD (CAD Generation)</li>
+                                <li>Three.js (3D Visualization)</li>
+                                <li>JavaScript (Client-side Demo)</li>
+                            </ul>
+                            
+                            <p><strong>Features:</strong></p>
+                            <ul style="margin-left: 20px; margin-bottom: 10px;">
+                                <li>Knowledge-Based Engineering (KBE)</li>
+                                <li>GA-based design optimization</li>
+                                <li>Component reuse & inventory</li>
+                                <li>Real-time 3D visualization</li>
+                                <li>Cost & manufacturability analysis</li>
+                            </ul>
+                            
+                            <p style="margin-top: 15px;">
+                                <a href="https://github.com/vebjornhegrand/BookshelfKBE" target="_blank" 
+                                   style="color: #2563eb; text-decoration: none; font-weight: 500;">
+                                   📦 View Full Project on GitHub →
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-success" id="placeOrderBtn" disabled onclick="showOrderDialog()">
+                        📋 Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <h3>Sample Designs (Demo Data)</h3>
+            <div class="popular-grid" id="popularDesigns">
+                <div class="popular-item">
+                    <h4>Small Unit</h4>
+                    <div class="dimensions">600 × 1200 × 300 mm</div>
+                    <div class="cost">$125.50</div>
+                    <div class="popularity">Popular: 5 orders</div>
+                </div>
+                <div class="popular-item">
+                    <h4>Medium Unit</h4>
+                    <div class="dimensions">800 × 1800 × 350 mm</div>
+                    <div class="cost">$185.75</div>
+                    <div class="popularity">Popular: 12 orders</div>
+                </div>
+                <div class="popular-item">
+                    <h4>Large Unit</h4>
+                    <div class="dimensions">1200 × 2000 × 400 mm</div>
+                    <div class="cost">$325.00</div>
+                    <div class="popularity">Popular: 8 orders</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/ga-optimizer.js"></script>
+    <script src="js/cost-calculator.js"></script>
+    <script src="js/viewer-3d.js"></script>
+    <script src="js/app-demo.js"></script>
+</body>
+</html>
+

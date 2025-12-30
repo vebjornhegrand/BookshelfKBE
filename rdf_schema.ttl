@@ -1,0 +1,227 @@
+@prefix : <http://example.org/bookshelf#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# Classes
+:BookshelfDesign a rdfs:Class ;
+    rdfs:label "Bookshelf Design" ;
+    rdfs:comment "A complete bookshelf configuration" .
+
+:Component a rdfs:Class ;
+    rdfs:label "Component" ;
+    rdfs:comment "A physical component of a bookshelf" .
+
+:Panel a rdfs:Class ;
+    rdfs:subClassOf :Component ;
+    rdfs:label "Panel" ;
+    rdfs:comment "Generic flat panel component" .
+
+:SidePanel a rdfs:Class ;
+    rdfs:subClassOf :Panel ;
+    rdfs:label "Side Panel" .
+
+:BackPanel a rdfs:Class ;
+    rdfs:subClassOf :Panel ;
+    rdfs:label "Back Panel" .
+
+:TopBottomPanel a rdfs:Class ;
+    rdfs:subClassOf :Panel ;
+    rdfs:label "Top or Bottom Panel" .
+
+:Shelf a rdfs:Class ;
+    rdfs:subClassOf :Component ;
+    rdfs:label "Shelf" .
+
+:Divider a rdfs:Class ;
+    rdfs:subClassOf :Component ;
+    rdfs:label "Vertical Divider" .
+
+:Customer a rdfs:Class ;
+    rdfs:label "Customer" ;
+    rdfs:comment "A customer who orders bookshelves" .
+
+:Order a rdfs:Class ;
+    rdfs:label "Order" ;
+    rdfs:comment "A customer order for a bookshelf design" .
+
+:Material a rdfs:Class ;
+    rdfs:label "Material" ;
+    rdfs:comment "Material type for bookshelf construction" .
+
+# Properties - Design specifications
+:hasWidth a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:float ;
+    rdfs:label "Width (mm)" .
+
+:hasHeight a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:float ;
+    rdfs:label "Height (mm)" .
+
+:hasDepth a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:float ;
+    rdfs:label "Depth (mm)" .
+
+:hasThickness a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:float ;
+    rdfs:label "Material thickness (mm)" .
+
+:hasTopPanel a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "Has top panel" .
+
+:hasMaterial a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range :Material ;
+    rdfs:label "Material type" .
+
+:hasComponent a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range :Component ;
+    rdfs:label "Has component" .
+
+:usesComponent a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range :Component ;
+    rdfs:label "Reuses KB component" .
+
+# Component properties
+:atPosition a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:float ;
+    rdfs:label "Position coordinate" .
+
+:componentType a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:string ;
+    rdfs:label "Component type" .
+
+:componentID a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:string ;
+    rdfs:label "Component ID" .
+
+:componentWidth a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:float ;
+    rdfs:label "Component width (mm)" .
+
+:componentHeight a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:float ;
+    rdfs:label "Component height (mm)" .
+
+:componentDepth a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:float ;
+    rdfs:label "Component depth (mm)" .
+
+:componentThickness a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:float ;
+    rdfs:label "Component thickness (mm)" .
+
+:componentMaterial a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range :Material ;
+    rdfs:label "Component material" .
+
+:jointPattern a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:string ;
+    rdfs:label "Joint or drilling pattern" .
+
+:stockQuantity a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:integer ;
+    rdfs:label "Available stock quantity" .
+
+:componentStatus a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:string ;
+    rdfs:label "Manufacturing status" .
+
+:lastUsed a rdf:Property ;
+    rdfs:domain :Component ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "Last used timestamp" .
+
+# Design metadata
+:designID a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:string ;
+    rdfs:label "Design ID" .
+
+:createdDate a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "Creation date" .
+
+:totalCost a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:float ;
+    rdfs:label "Total cost (USD)" .
+
+:maxLoad a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:float ;
+    rdfs:label "Max load capacity (kg)" .
+
+:generatedBy a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:string ;
+    rdfs:label "Generation method" ;
+    rdfs:comment "KB_SEARCH, GA_OPTIMIZED, or MANUAL" .
+
+# Customer and Order properties
+:customerID a rdf:Property ;
+    rdfs:domain :Customer ;
+    rdfs:range xsd:string ;
+    rdfs:label "Customer ID" .
+
+:customerName a rdf:Property ;
+    rdfs:domain :Customer ;
+    rdfs:range xsd:string ;
+    rdfs:label "Customer name" .
+
+:orderID a rdf:Property ;
+    rdfs:domain :Order ;
+    rdfs:range xsd:string ;
+    rdfs:label "Order ID" .
+
+:orderedBy a rdf:Property ;
+    rdfs:domain :Order ;
+    rdfs:range :Customer ;
+    rdfs:label "Ordered by customer" .
+
+:orderedDesign a rdf:Property ;
+    rdfs:domain :Order ;
+    rdfs:range :BookshelfDesign ;
+    rdfs:label "Ordered design" .
+
+:orderDate a rdf:Property ;
+    rdfs:domain :Order ;
+    rdfs:range xsd:dateTime ;
+    rdfs:label "Order date" .
+
+:quantity a rdf:Property ;
+    rdfs:domain :Order ;
+    rdfs:range xsd:integer ;
+    rdfs:label "Quantity ordered" .
+
+# Similarity and recommendation properties
+:similarTo a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range :BookshelfDesign ;
+    rdfs:label "Similar design" .
+
+:popularityScore a rdf:Property ;
+    rdfs:domain :BookshelfDesign ;
+    rdfs:range xsd:integer ;
+    rdfs:label "Times ordered" .
